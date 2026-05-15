@@ -1,0 +1,14 @@
+src/
+node_modules/
+docs/
+.gitignore
+.eslintrc*
+eslint.config.*
+tsconfig.json
+*.log
+.env*
+credentials.json
+.DS_Store
+.vscode/
+.idea/
+*.tgz

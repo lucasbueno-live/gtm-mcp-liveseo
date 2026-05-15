@@ -1,0 +1,61 @@
+{
+  "name": "gtm-mcp-liveseo",
+  "version": "0.1.0",
+  "description": "MCP server local para Google Tag Manager — versão liveSEO com PT-BR, modo readonly por padrão e auditoria humana",
+  "license": "Apache-2.0",
+  "author": "liveSEO <lucas.bueno@liveseo.com.br>",
+  "type": "module",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucasbueno-live/gtm-mcp-liveseo.git"
+  },
+  "homepage": "https://github.com/lucasbueno-live/gtm-mcp-liveseo#readme",
+  "bugs": {
+    "url": "https://github.com/lucasbueno-live/gtm-mcp-liveseo/issues"
+  },
+  "bin": {
+    "gtm-mcp-liveseo": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "gtm",
+    "google-tag-manager",
+    "claude",
+    "liveseo"
+  ],
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --format=esm --outfile=dist/index.js --packages=external",
+    "build:typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "start": "node dist/index.js",
+    "lint": "eslint --ext .ts src",
+    "lint:fix": "eslint --ext .ts src --fix"
+  },
+  "dependencies": {
+    "@googleapis/tagmanager": "^14.1.0",
+    "@modelcontextprotocol/sdk": "^1.18.1",
+    "google-auth-library": "^9.4.1",
+    "open": "^10.1.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.24.0",
+    "@types/node": "^20.11.19",
+    "@typescript-eslint/eslint-plugin": "^8.30.1",
+    "@typescript-eslint/parser": "^8.30.1",
+    "esbuild": "^0.28.0",
+    "eslint": "^9.24.0",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

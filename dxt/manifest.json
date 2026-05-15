@@ -1,0 +1,96 @@
+{
+  "dxt_version": "0.1",
+  "name": "liveseo-gtm-mcp",
+  "display_name": "liveSEO — Google Tag Manager",
+  "version": "0.1.0",
+  "description": "Gerencie contas, containers, workspaces, tags, triggers e variáveis do Google Tag Manager via Claude — em português, com modo seguro por padrão.",
+  "long_description": "Esta extensão conecta o Claude Desktop ao Google Tag Manager rodando localmente na sua máquina. Tokens OAuth ficam armazenados apenas no seu computador (sem servidor terceiro). Por padrão, opera em modo readonly — apenas leitura. Para habilitar operações destrutivas (criar/editar/remover/publicar), marque a opção 'Permitir escrita' nas configurações. Mensagens de erro e descrições estão em português brasileiro.",
+  "author": {
+    "name": "liveSEO",
+    "email": "lucas.bueno@liveseo.com.br",
+    "url": "https://liveseo.com.br"
+  },
+  "license": "Apache-2.0",
+  "icon": "icon.png",
+  "homepage": "https://github.com/lucasbueno-live/gtm-mcp-liveseo",
+  "documentation": "https://github.com/lucasbueno-live/gtm-mcp-liveseo/blob/main/docs/TREINAMENTO-LIVESEO.md",
+  "support": "https://github.com/lucasbueno-live/gtm-mcp-liveseo/issues",
+  "server": {
+    "type": "node",
+    "entry_point": "server/dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/dist/index.js",
+        "${user_config.write_mode_flag}"
+      ],
+      "env": {
+        "GTM_MCP_CLIENT_ID": "${user_config.client_id}",
+        "GTM_MCP_CLIENT_SECRET": "${user_config.client_secret}"
+      }
+    }
+  },
+  "user_config": {
+    "client_id": {
+      "type": "string",
+      "title": "OAuth Client ID",
+      "description": "Client ID do Google Cloud Console (Desktop app). Peça ao admin liveSEO se você não tem.",
+      "required": true,
+      "sensitive": false
+    },
+    "client_secret": {
+      "type": "string",
+      "title": "OAuth Client Secret",
+      "description": "Client Secret correspondente. Tratado como dado sensível.",
+      "required": true,
+      "sensitive": true
+    },
+    "write_mode_flag": {
+      "type": "string",
+      "title": "Permitir escrita?",
+      "description": "Em modo readonly (padrão), apenas consultas são permitidas. Selecione 'Habilitar escrita' SOMENTE se você precisa criar/editar/remover tags. Mesmo nesse modo, operações destrutivas como remover ou publicar exigem confirmação explícita.",
+      "required": false,
+      "default": "",
+      "options": [
+        { "label": "Modo seguro (apenas leitura) — recomendado", "value": "" },
+        { "label": "Habilitar escrita (criar/editar/remover/publicar)", "value": "--write" }
+      ]
+    }
+  },
+  "tools": [
+    { "name": "gtm_help", "description": "Guia de uso e melhores práticas." },
+    { "name": "gtm_audit_container", "description": "Relatório de saúde do container em PT-BR." },
+    { "name": "gtm_account", "description": "Lista, consulta e atualiza contas GTM." },
+    { "name": "gtm_container", "description": "CRUD de containers, snippet de instalação, lookup, combine, moveTagId." },
+    { "name": "gtm_workspace", "description": "CRUD de workspaces, createVersion, getStatus, sync, quickPreview, resolveConflict." },
+    { "name": "gtm_tag", "description": "CRUD + revert de tags." },
+    { "name": "gtm_trigger", "description": "CRUD + revert de triggers." },
+    { "name": "gtm_variable", "description": "CRUD + revert de variáveis customizadas." },
+    { "name": "gtm_folder", "description": "Organização em pastas." },
+    { "name": "gtm_zone", "description": "Zonas de container." },
+    { "name": "gtm_client", "description": "Clients server-side." },
+    { "name": "gtm_transformation", "description": "Transformations server-side." },
+    { "name": "gtm_template", "description": "Templates customizados." },
+    { "name": "gtm_gtag_config", "description": "Google tag configs." },
+    { "name": "gtm_built_in_variable", "description": "Variáveis built-in (Page URL, Click Classes, etc.)." },
+    { "name": "gtm_version", "description": "Versões: get, live, publish, remove, setLatest, undelete, update." },
+    { "name": "gtm_version_header", "description": "Histórico de versões publicadas." },
+    { "name": "gtm_environment", "description": "Environments (Live, Latest, custom)." },
+    { "name": "gtm_destination", "description": "Destinations: list, link, unlink." },
+    { "name": "gtm_user_permission", "description": "Permissões de usuário (ação sensível)." }
+  ],
+  "keywords": [
+    "gtm",
+    "google-tag-manager",
+    "liveseo",
+    "marketing",
+    "seo",
+    "analytics"
+  ],
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  }
+}

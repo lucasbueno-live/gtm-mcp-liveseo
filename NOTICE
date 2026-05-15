@@ -1,0 +1,15 @@
+gtm-mcp-liveseo
+
+Copyright 2026 liveSEO
+
+This product is a derivative work based on:
+  google-tag-manager-mcp-server
+  Copyright stape-io
+  https://github.com/stape-io/google-tag-manager-mcp-server
+  Licensed under the Apache License, Version 2.0
+
+Modifications by liveSEO include: conversion from a remote Cloudflare
+Workers OAuth server to a local stdio MCP server, Portuguese (pt-BR)
+tool and error messages, readonly-by-default safety mode, mandatory
+confirmation on destructive operations, and the gtm_help and
+gtm_audit_container tools.
