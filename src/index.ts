@@ -14,6 +14,12 @@ async function main(): Promise<void> {
     return;
   }
 
+  if (args[0] === "setup") {
+    const { runSetup } = await import("./cli/setup.js");
+    await runSetup();
+    return;
+  }
+
   if (args.includes("--logout")) {
     const { deleteProfile, getActiveProfileName } = await import(
       "./auth/tokenStore.js"
@@ -56,7 +62,13 @@ function usage(): string {
   return `liveSEO GTM MCP server (multi-conta)
 
 Uso:
-  npx gtm-mcp-liveseo [opções]
+  npx gtm-mcp-liveseo setup     Assistente guiado (login + config do Claude)
+  npx gtm-mcp-liveseo [opções]  Inicia o servidor MCP (usado pelo Claude)
+
+Comandos:
+  setup               Passo a passo no terminal: faz o login Google e
+                      já escreve (ou mostra) a config do Claude Desktop.
+                      É o que a pessoa roda na 1ª vez.
 
 Opções:
   --write             Habilita operações de escrita (criar, editar, remover, publicar).

@@ -21,10 +21,27 @@ Doc interno para o time da liveSEO se familiarizar com a versão local do MCP se
 - Claude Desktop instalado
 - **Sua conta Google adicionada como test user** — manda pro Lucas o(s) email(s) que você usa pra acessar GTM de cliente; ele adiciona no projeto. Sem isso, o login dá "app bloqueado".
 
-### Configuração
+### Configuração — jeito fácil (assistente)
 
-1. Abra Claude Desktop → Settings → Developer → Edit Config
-2. Cole/mescle esta configuração (sem credenciais — já vêm embutidas):
+1. Instale o [Node.js 18+](https://nodejs.org/) (se ainda não tiver)
+2. Abra o terminal (no Windows: "Prompt de Comando" ou "PowerShell") e rode:
+
+   ```
+   npx -y gtm-mcp-liveseo setup
+   ```
+
+3. Siga o passo a passo na tela. Ele vai:
+   - Perguntar nome do perfil (Enter pra usar o padrão) e se você precisa de modo escrita
+   - Abrir o **navegador** pro login Google → escolha a conta com acesso ao GTM
+   - ⚠️ Tela amarela **"O Google não verificou este app"** → **"Avançado" → "Acessar gtm-liveseo-mcp"** (seguro; roda só na sua máquina). Se aparecer tela **vermelha "app bloqueado"**, seu email não está liberado: mande pro Lucas.
+   - Perguntar se pode **já configurar o Claude Desktop pra você** → responda **S**
+4. **Feche e abra o Claude Desktop.** Pronto — peça, ex.: *"liste minhas contas do GTM"*.
+
+> O assistente cria/edita o `claude_desktop_config.json` automaticamente (com backup `.bak`). Se preferir colar à mão, responda **n** que ele mostra o JSON e o caminho do arquivo.
+
+### Configuração — manual (alternativa)
+
+Se preferir não usar o assistente: Claude Desktop → Settings → Developer → Edit Config → cole/mescle:
 
 ```json
 {
@@ -37,10 +54,7 @@ Doc interno para o time da liveSEO se familiarizar com a versão local do MCP se
 }
 ```
 
-3. Salve e reinicie Claude Desktop
-4. Na primeira tool, um navegador abre pra login Google — escolha a conta que tem acesso ao GTM do cliente (e que já foi adicionada como test user)
-5. ⚠️ **Vai aparecer a tela amarela "O Google não verificou este app"** — esperado e seguro. Clique em **"Avançado"** (ou "Advanced") → **"Acessar gtm-liveseo-mcp (não seguro)"**. O app é da liveSEO e roda local na sua máquina; o token nem sai do computador. → Se aparecer tela **vermelha "app bloqueado"**, sua conta não está na lista de test users: manda o email pro Lucas.
-6. Pronto. O token fica salvo em `C:\Users\<você>\.gtm-mcp\profiles\<perfil>.json`
+Salve, reinicie o Claude, e no primeiro pedido de GTM o navegador abre pro login (mesma tela amarela → Avançado → Acessar). Token salvo em `C:\Users\<você>\.gtm-mcp\profiles\<perfil>.json`.
 
 > 🔁 **Re-login a cada ~7 dias:** por limitação do Google (app em modo Testing), o acesso expira semanalmente. Quando isso acontecer, o Claude vai dizer que precisa reautenticar — é só pedir "faz login de novo no perfil X" (ou `gtm_auth login profile='X'`), o navegador reabre, 1 clique e segue. Não perde nada.
 

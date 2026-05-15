@@ -6,6 +6,9 @@
   "author": "liveSEO <lucas.bueno@liveseo.com.br>",
   "type": "module",
   "main": "dist/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lucasbueno-live/gtm-mcp-liveseo.git"
