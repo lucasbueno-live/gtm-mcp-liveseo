@@ -19,24 +19,19 @@ Doc interno para o time da liveSEO se familiarizar com a versão local do MCP se
 
 - Node.js 18+ instalado ([nodejs.org](https://nodejs.org/))
 - Claude Desktop instalado
-- Credenciais OAuth da liveSEO (peça pro Lucas o `GTM_MCP_CLIENT_ID` e `GTM_MCP_CLIENT_SECRET`)
 - **Sua conta Google adicionada como test user** — manda pro Lucas o(s) email(s) que você usa pra acessar GTM de cliente; ele adiciona no projeto. Sem isso, o login dá "app bloqueado".
 
 ### Configuração
 
 1. Abra Claude Desktop → Settings → Developer → Edit Config
-2. Cole/mescle esta configuração:
+2. Cole/mescle esta configuração (sem credenciais — já vêm embutidas):
 
 ```json
 {
   "mcpServers": {
     "gtm": {
       "command": "npx",
-      "args": ["-y", "gtm-mcp-liveseo"],
-      "env": {
-        "GTM_MCP_CLIENT_ID": "VOCÊ_RECEBEU_DO_LUCAS",
-        "GTM_MCP_CLIENT_SECRET": "VOCÊ_RECEBEU_DO_LUCAS"
-      }
+      "args": ["-y", "gtm-mcp-liveseo"]
     }
   }
 }

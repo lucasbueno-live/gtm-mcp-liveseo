@@ -2,6 +2,10 @@ import { promises as fs } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { logStderr } from "./logger.js";
+import {
+  EMBEDDED_CLIENT_ID,
+  EMBEDDED_CLIENT_SECRET,
+} from "../auth/embeddedCredentials.js";
 
 export interface ServerConfig {
   clientId: string;
@@ -46,16 +50,13 @@ export async function resolveConfig(args: string[]): Promise<ServerConfig> {
     return { ...fromFile, readonly };
   }
 
-  throw new Error(
-    [
-      "Credenciais OAuth não encontradas.",
-      "Configure de uma das formas:",
-      "  1. Variáveis de ambiente GTM_MCP_CLIENT_ID e GTM_MCP_CLIENT_SECRET.",
-      "  2. Arquivo ~/.gtm-mcp/oauth-client.json baixado do Google Cloud Console (tipo Desktop).",
-      "  3. Variável de ambiente GTM_MCP_OAUTH_FILE apontando para um arquivo de credenciais.",
-      "Veja docs/SETUP-GOOGLE-CLOUD.md para o passo a passo.",
-    ].join("\n"),
-  );
+  // Fallback padrão: credenciais embutidas. Faz o `npx gtm-mcp-liveseo`
+  // funcionar sem nenhuma configuração — o usuário só faz o login Google.
+  return {
+    clientId: EMBEDDED_CLIENT_ID,
+    clientSecret: EMBEDDED_CLIENT_SECRET,
+    readonly,
+  };
 }
 
 async function loadFromFile(): Promise<Pick<

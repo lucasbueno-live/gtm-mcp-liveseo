@@ -4,6 +4,7 @@ dist/
 .env
 .env.local
 credentials.json
+oauth-embed.json
 .DS_Store
 .vscode/
 .idea/

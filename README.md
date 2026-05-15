@@ -22,41 +22,35 @@ MCP server local em Node.js para Google Tag Manager. Versão liveSEO do projeto 
 
 ## Instalação
 
-Pelo Claude Desktop, edite `claude_desktop_config.json`:
+Zero configuração. No Claude Desktop, edite `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "gtm": {
       "command": "npx",
-      "args": ["-y", "gtm-mcp-liveseo"],
-      "env": {
-        "GTM_MCP_CLIENT_ID": "SEU_CLIENT_ID.apps.googleusercontent.com",
-        "GTM_MCP_CLIENT_SECRET": "SEU_CLIENT_SECRET"
-      }
+      "args": ["-y", "gtm-mcp-liveseo"]
     }
   }
 }
 ```
 
-Para habilitar escrita:
+Para habilitar escrita (criar/editar/remover/publicar), adicione `--write`:
 
 ```json
 {
   "mcpServers": {
     "gtm": {
       "command": "npx",
-      "args": ["-y", "gtm-mcp-liveseo", "--write"],
-      "env": {
-        "GTM_MCP_CLIENT_ID": "...",
-        "GTM_MCP_CLIENT_SECRET": "..."
-      }
+      "args": ["-y", "gtm-mcp-liveseo", "--write"]
     }
   }
 }
 ```
 
-Reinicie o Claude Desktop. Na primeira chamada de tool, um navegador vai abrir pra login Google. Os tokens ficam salvos em `~/.gtm-mcp/profiles/<perfil>.json` (permissões 0600).
+Reinicie o Claude Desktop. Na primeira chamada de tool, um navegador abre pro login Google (escolha a conta com acesso ao GTM → "Avançado → Acessar"). Pronto. As credenciais OAuth do app já vêm embutidas no pacote; os tokens de cada pessoa ficam só na máquina dela em `~/.gtm-mcp/profiles/<perfil>.json` (permissões 0600).
+
+> Avançado (opcional): dá pra sobrescrever as credenciais OAuth embutidas com as variáveis `GTM_MCP_CLIENT_ID`/`GTM_MCP_CLIENT_SECRET` ou um arquivo `~/.gtm-mcp/oauth-client.json`.
 
 ## Multi-conta (perfis)
 
@@ -81,13 +75,16 @@ Opções:
   --help              Mostra ajuda
 ```
 
-## Variáveis de ambiente
+## Variáveis de ambiente (todas opcionais)
+
+As credenciais OAuth do app já vêm embutidas — nada disso é obrigatório. Use só se quiser apontar pra outro projeto Google Cloud:
 
 | Variável | Descrição |
 |---|---|
-| `GTM_MCP_CLIENT_ID` | Client ID OAuth (necessário) |
-| `GTM_MCP_CLIENT_SECRET` | Client Secret OAuth (necessário) |
-| `GTM_MCP_OAUTH_FILE` | Caminho de credentials.json (alternativa às vars acima) |
+| `GTM_MCP_CLIENT_ID` | Sobrescreve o Client ID OAuth embutido |
+| `GTM_MCP_CLIENT_SECRET` | Sobrescreve o Client Secret OAuth embutido |
+| `GTM_MCP_OAUTH_FILE` | Caminho de um credentials.json (alternativa às vars acima) |
+| `GTM_MCP_PROFILE` | Perfil ativo inicial (default: `default`) |
 
 ## Tools disponíveis
 

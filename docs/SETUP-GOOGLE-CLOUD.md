@@ -129,24 +129,9 @@ Vai aparecer um modal com `Client ID` e `Client Secret`. Clique em **Download JS
 
 ### 6. Usar as credenciais
 
-Você **não** embute o `client_id`/`client_secret` no pacote nem no repositório. Eles vão como variáveis de ambiente na config do Claude Desktop de cada pessoa:
+As credenciais deste app Desktop ficam **embutidas no pacote** (`src/auth/embeddedCredentials.ts`), pra que `npx -y gtm-mcp-liveseo` funcione sem nenhuma config. Isso é seguro e padrão para OAuth client *Desktop*: o Google trata o "client secret" como **não confidencial** (não há como escondê-lo num CLI distribuído — mesmo modelo do `gcloud`). O que protege o acesso é o **consent screen + escopos + o token individual de cada pessoa** (que fica só na máquina dela). As credenciais sozinhas não dão acesso a nenhum GTM.
 
-```json
-{
-  "mcpServers": {
-    "gtm": {
-      "command": "npx",
-      "args": ["-y", "gtm-mcp-liveseo"],
-      "env": {
-        "GTM_MCP_CLIENT_ID": "SEU_CLIENT_ID.apps.googleusercontent.com",
-        "GTM_MCP_CLIENT_SECRET": "SEU_CLIENT_SECRET"
-      }
-    }
-  }
-}
-```
-
-> ⚠️ **Segurança**: o `client_secret` aqui não é tão crítico quanto parece — pra apps Desktop, o Google considera ele "público" por natureza (não tem como esconder em binário distribuído). O que protege é o consent screen + escopos + tokens individuais. Mas mesmo assim, **nunca** comite ele no GitHub público.
+Quem mantém o projeto OAuth só precisa: adicionar **test users** (emails do time) e, se um dia trocar o projeto Google Cloud, atualizar `src/auth/embeddedCredentials.ts` (ou sobrescrever via env `GTM_MCP_CLIENT_ID`/`GTM_MCP_CLIENT_SECRET`).
 
 ---
 
