@@ -131,7 +131,21 @@ Vai aparecer um modal com `Client ID` e `Client Secret`. Clique em **Download JS
 
 As credenciais deste app Desktop ficam **embutidas no pacote** (`src/auth/embeddedCredentials.ts`), pra que `npx -y gtm-mcp-liveseo` funcione sem nenhuma config. Isso é seguro e padrão para OAuth client *Desktop*: o Google trata o "client secret" como **não confidencial** (não há como escondê-lo num CLI distribuído — mesmo modelo do `gcloud`). O que protege o acesso é o **consent screen + escopos + o token individual de cada pessoa** (que fica só na máquina dela). As credenciais sozinhas não dão acesso a nenhum GTM.
 
-Quem mantém o projeto OAuth só precisa: adicionar **test users** (emails do time) e, se um dia trocar o projeto Google Cloud, atualizar `src/auth/embeddedCredentials.ts` (ou sobrescrever via env `GTM_MCP_CLIENT_ID`/`GTM_MCP_CLIENT_SECRET`).
+Quem mantém o projeto OAuth só precisa: adicionar **test users** (emails do time) e manter o `oauth-embed.json` no cofre (ver [PUBLICAR-NPM.md](PUBLICAR-NPM.md)).
+
+### 7. Plano de mitigação — rotacionar o secret
+
+O modelo embutido se apoia em: (a) app em **Testing + test users** (só contas da lista conseguem completar o OAuth, limitando phishing), e (b) capacidade de **rotacionar** o secret se algum dia ele for abusado (ex.: alguém usou o client_id pra montar app falso, ou estourou quota).
+
+Como rotacionar (≈5 min, invalida o secret antigo):
+
+1. Google Cloud Console → projeto `gtm-liveseo-mcp` → **APIs & Services → Credentials**
+2. Clique no OAuth client Desktop → **Reset secret** (ou crie um novo client Desktop e troque o client_id também)
+3. Baixe o JSON novo → substitua o `oauth-embed.json` no cofre e na máquina de quem publica
+4. `npm version patch && npm publish --access public` → o pacote novo sai com o secret novo
+5. O time atualiza automático no próximo `npx` (ou `npm i -g gtm-mcp-liveseo@latest`)
+
+Sinais de que é hora de rotacionar: pico estranho de uso na quota do projeto, ou aviso do Google sobre uso anômalo do OAuth client. Tokens já emitidos para os test users continuam válidos até expirarem (~7 dias no modo Testing) — quem precisar refaz o login normalmente.
 
 ---
 
