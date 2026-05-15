@@ -15,7 +15,7 @@
     "url": "https://github.com/lucasbueno-live/gtm-mcp-liveseo/issues"
   },
   "bin": {
-    "gtm-mcp-liveseo": "./dist/index.js"
+    "gtm-mcp-liveseo": "dist/index.js"
   },
   "files": [
     "dist",
