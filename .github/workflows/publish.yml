@@ -1,0 +1,61 @@
+name: Publicar no npm
+
+# Publica o pacote no npm quando você cria uma Release no GitHub
+# (a tag da release define a versão, ex.: v0.2.1 -> publica 0.2.1).
+# Também pode ser disparado manualmente em Actions -> Run workflow.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versão a publicar (ex.: 0.2.1). Vazio = usa a do package.json."
+        required: false
+
+permissions:
+  contents: read
+  id-token: write # necessário para npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Definir versão a partir da tag/release
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            VER="${{ github.event.release.tag_name }}"
+          else
+            VER="${{ github.event.inputs.version }}"
+          fi
+          VER="${VER#v}"
+          if [ -n "$VER" ]; then
+            echo "Publicando versão $VER"
+            npm version "$VER" --no-git-tag-version --allow-same-version
+          else
+            echo "Sem versão explícita — usando a do package.json"
+          fi
+
+      - name: Build
+        run: npm run build
+
+      - name: Smoke test (--help)
+        run: node dist/index.js --help
+
+      - name: Publicar no npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
