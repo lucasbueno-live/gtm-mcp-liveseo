@@ -42,8 +42,9 @@ Doc interno para o time da liveSEO se familiarizar com a versão local do MCP se
 ```
 
 3. Salve e reinicie Claude Desktop
-4. Na primeira tool, um navegador abre pra login Google — use sua conta liveSEO/cliente
-5. Pronto. O token fica salvo em `C:\Users\<você>\.gtm-mcp\credentials.json`
+4. Na primeira tool, um navegador abre pra login Google — escolha a conta que tem acesso ao GTM do cliente
+5. ⚠️ **Vai aparecer a tela "O Google não verificou este app"** — isso é esperado e seguro. Clique em **"Avançado"** (ou "Advanced") → **"Acessar gtm-mcp-liveseo (não seguro)"**. O app é da liveSEO e roda local na sua máquina; o aviso só existe porque não pagamos a verificação do Google (desnecessária pra ferramenta interna). Acontece **uma vez por conta**.
+6. Pronto. O token fica salvo em `C:\Users\<você>\.gtm-mcp\profiles\<perfil>.json`
 
 ### Modo escrita (quando precisar)
 
@@ -150,7 +151,7 @@ Claude:
 
 ### ❌ Não faça
 
-- Compartilhar `credentials.json` com colegas (cada um tem o próprio)
+- Compartilhar a pasta `~/.gtm-mcp/profiles/` ou seus tokens com colegas (cada um loga o seu)
 - Rodar com `--write` em demos pra cliente (use readonly)
 - Publicar sem antes pedir `quickPreview` no workspace
 - Confiar cegamente em IDs que o Claude inventar — sempre liste primeiro

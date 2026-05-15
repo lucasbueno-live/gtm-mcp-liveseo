@@ -57,8 +57,7 @@ Menu lateral: **APIs & Services → OAuth consent screen**
 
 #### 4.1. User type
 
-- Se a liveSEO tem **Google Workspace** (domínio `liveseo.com.br` gerenciado) → escolha **Internal**. Mais simples, sem verificação do Google necessária.
-- Senão → escolha **External** (vamos manter em "Testing" mode pra não precisar de verificação).
+Escolha **External**. ⚠️ **Não use "Internal"** — Internal só aceita contas `@liveseo.com.br`, e na agência você acessa GTM de cliente com contas Google fora desse domínio (Gmail do cliente, conta dedicada que o cliente criou, etc.). Internal recusaria essas contas.
 
 Clique **Create**.
 
@@ -97,13 +96,23 @@ Salve. Clique **Save and Continue**.
 
 > 💡 No futuro vamos suportar um modo "readonly" do servidor MCP que usa só o primeiro scope. Por ora, deixamos todos cadastrados.
 
-#### 4.4. Test users (só se escolheu "External")
+#### 4.4. Test users
 
-Se você escolheu **External** no passo 4.1, adicione aqui os emails de todo mundo da liveSEO que vai usar o MCP. Sem isso, o OAuth vai recusar o login deles.
+Pode **pular** esta etapa (adicione só o seu email se o formulário exigir pelo menos um). Não vamos depender da lista de test users porque o app vai ser **publicado** no próximo passo — aí qualquer conta Google consegue logar, sem precisar cadastrar email por email.
 
-Se escolheu **Internal**, esse passo nem aparece — todos da org têm acesso automaticamente.
+> ⚠️ Por que não ficar em "Testing": no modo Testing o refresh token **expira a cada 7 dias**, forçando re-login semanal de cada cliente. Publicando, o token passa a ter longa duração.
 
 Clique **Save and Continue**, depois **Back to Dashboard**.
+
+#### 4.5. Publicar o app (Production, SEM verificação)
+
+Ainda em **APIs & Services → OAuth consent screen**, procure o status de publicação ("Publishing status"). Vai estar em **Testing**.
+
+Clique em **PUBLISH APP** → confirme (**Confirm**).
+
+O status muda pra **In production**.
+
+**Você NÃO precisa enviar pra verificação.** Vai aparecer algo como "Verification not required" ou um botão "Prepare for verification" — **ignore**. Os escopos do Tag Manager são "sensíveis" (não "restritos"), então o app funciona publicado sem verificação. O único efeito de não verificar: cada pessoa vê **uma vez por conta** a tela "O Google não verificou este app" e precisa clicar em **Avançado → Acessar (nome do app)**. É seguro — o app é da liveSEO e roda local na máquina de vocês. (Documentado em [TREINAMENTO-LIVESEO.md](TREINAMENTO-LIVESEO.md) pro time não se assustar.)
 
 ### 5. Criar credenciais OAuth
 
@@ -147,23 +156,25 @@ Você **não** embute o `client_id`/`client_secret` no pacote nem no repositóri
 
 ## Checklist final
 
-Antes de me devolver, confirma:
-
 - [ ] Projeto Google Cloud criado e selecionado
 - [ ] Tag Manager API enabled
-- [ ] OAuth consent screen configurado (Internal ou External + Test users)
+- [ ] OAuth consent screen configurado como **External**
 - [ ] Todos os 9 scopes adicionados
+- [ ] App **publicado** ("In production"), **sem** enviar pra verificação
 - [ ] Credencial **Desktop app** criada
-- [ ] `credentials.json` baixado
+- [ ] `client_id` + `client_secret` em mãos
 
-Quando estiver pronto, me passa. A partir daí eu sigo com a Fase 3 (refactor do código pra rodar local).
+Quando estiver pronto, é só configurar no Claude Desktop (ou publicar no npm pro time).
 
 ---
 
 ## FAQ
 
-**Q: Preciso publicar o app pra "Production"?**
-Não. Se estiver "Internal", já tá liberado pra todo mundo da org. Se "External" em "Testing", funciona pros emails listados em test users (limite de 100). Só viraria problema se quiséssemos liberar pra fora da liveSEO — aí teria que passar pela verificação do Google.
+**Q: Preciso publicar o app pra "Production"? E verificar?**
+**Publicar: sim. Verificar: não.** Como vocês logam com contas fora do domínio @liveseo, o app tem que ser External e Publicado (senão o token expira a cada 7 dias no modo Testing). A verificação do Google é **opcional** — sem ela, cada conta vê uma vez a tela "app não verificado" e clica em "Avançado → Continuar". É seguro pra ferramenta interna. Verificar só vale se um dia incomodar essa tela ou passar de ~100 contas; aí é um processo à parte (privacy policy pública, domínio verificado, revisão do Google).
+
+**Q: A tela "O Google não verificou este app" é perigosa?**
+Não, no nosso caso. Essa tela existe pra proteger usuários de apps de terceiros desconhecidos. Aqui o "app" é o MCP da liveSEO rodando **localmente na máquina de vocês** — o token nem sai do computador. Clicar em "Avançado → Acessar" é seguro. Acontece **uma vez por conta** (depois o Google lembra).
 
 **Q: Esse projeto Google Cloud cobra algo?**
 Não. As APIs do GTM têm cota gratuita generosa. Só viraria custo se algum dia rolasse uso muito pesado (milhares de chamadas/dia/usuário), o que não é o caso.
@@ -175,4 +186,4 @@ Pode. Só certifique-se que a Tag Manager API tá habilitada nele e que dá pra 
 Volta no Console → Credentials → clica no nome do client → tem "Download JSON" e "Reset secret". Não há perda real, só inconveniente.
 
 **Q: Preciso criar uma credencial OAuth para CADA conta GTM de cliente que eu quero auditar?**
-**Não.** Você cria a credencial OAuth **uma única vez**. Ela identifica o *aplicativo* (o MCP server) para o Google — não uma conta GTM específica. O acesso a cada GTM de cliente vem do **login**: quando o navegador abre no fluxo OAuth, a conta Google que você usar pra logar determina o que você consegue auditar. Se essa conta tem acesso ao container do cliente (porque o cliente te adicionou em `tagmanager.google.com` → Admin → Gerenciamento de Usuários, como é padrão pra agência), você audita normalmente. Para trocar de conta/cliente: `npx gtm-mcp-liveseo --logout` e logue com outra conta — ou use uma conta liveSEO que já tenha acesso a vários clientes de uma vez.
+**Não.** Você cria a credencial OAuth **uma única vez**. Ela identifica o *aplicativo* (o MCP server) para o Google — não uma conta GTM específica. O acesso a cada GTM de cliente vem do **login**: quando o navegador abre no fluxo OAuth, a conta Google que você usar pra logar determina o que você consegue auditar. Se essa conta tem acesso ao container do cliente (porque o cliente te adicionou em `tagmanager.google.com` → Admin → Gerenciamento de Usuários, como é padrão pra agência), você audita normalmente. Para trabalhar com vários clientes/contas, use **perfis**: pelo chat, `gtm_auth login profile='cliente-x'` cria/loga um perfil e `gtm_auth switch profile='cliente-x'` alterna entre eles sem refazer login (cada conta de email = um perfil). Veja [TREINAMENTO-LIVESEO.md](TREINAMENTO-LIVESEO.md).
