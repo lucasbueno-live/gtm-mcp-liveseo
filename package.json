@@ -42,7 +42,7 @@
   "dependencies": {
     "@googleapis/tagmanager": "^14.1.0",
     "@modelcontextprotocol/sdk": "^1.18.1",
-    "google-auth-library": "^9.4.1",
+    "google-auth-library": "^10.1.0",
     "open": "^10.1.0",
     "zod": "^3.22.4"
   },

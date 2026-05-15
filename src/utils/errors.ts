@@ -18,6 +18,33 @@ const HUMAN_FRIENDLY_MESSAGES: Record<number, string> = {
   503: "API do Google temporariamente indisponível. Tente de novo.",
 };
 
+/**
+ * Detecta condições específicas a partir do detalhe textual / reason
+ * do erro do Google, sobrepondo a mensagem genérica por código.
+ */
+function specificMessage(
+  reasons: string[],
+  detail: string,
+): string | undefined {
+  const hay = `${reasons.join(" ")} ${detail}`.toLowerCase();
+  if (
+    reasons.includes("accessNotConfigured") ||
+    hay.includes("has not been used in project") ||
+    hay.includes("is disabled") ||
+    hay.includes("serviceusage") ||
+    hay.includes("tagmanager.googleapis.com")
+  ) {
+    return "A Tag Manager API não está habilitada no projeto Google Cloud das credenciais. Habilite em https://console.developers.google.com/apis/api/tagmanager.googleapis.com/overview e aguarde ~2 min.";
+  }
+  if (reasons.includes("rateLimitExceeded") || reasons.includes("userRateLimitExceeded")) {
+    return "Limite de chamadas atingido (quota da API GTM). Espere ~1 minuto e tente de novo.";
+  }
+  if (reasons.includes("insufficientPermissions") || hay.includes("insufficient")) {
+    return "A conta Google autenticada não tem permissão suficiente nesse container GTM. Confira o acesso em tagmanager.google.com (Admin → Gerenciamento de Usuários) ou troque de perfil com gtm_auth.";
+  }
+  return undefined;
+}
+
 export function createErrorResponse(
   context: string,
   error: unknown,
@@ -27,12 +54,17 @@ export function createErrorResponse(
 
   if (e && typeof e === "object" && "code" in e && typeof e.code === "number") {
     const apiErr = e as GoogleApiError;
-    const friendly = HUMAN_FRIENDLY_MESSAGES[apiErr.code ?? 0];
+    const reasons = (apiErr.errors ?? [])
+      .map((it) => it.reason ?? "")
+      .filter(Boolean);
     const detail =
       (apiErr.errors ?? [])
         .map((it) => it.message)
         .filter(Boolean)
         .join(" • ") || apiErr.message || "";
+    const friendly =
+      specificMessage(reasons, detail) ??
+      HUMAN_FRIENDLY_MESSAGES[apiErr.code ?? 0];
     userMessage = `❌ ${context}\n\n${friendly ?? `Erro ${apiErr.code} da API Google.`}\n\nDetalhes técnicos: ${detail}`;
   } else if (e instanceof Error) {
     userMessage = `❌ ${context}\n\n${e.message}`;
