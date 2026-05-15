@@ -3,6 +3,38 @@
 O objetivo é só deixar o pacote no npm pra qualquer pessoa usar com
 `npx -y gtm-mcp-liveseo` sem clonar nada. É publicação manual, simples.
 
+## ⚠️ Pré-requisito: `oauth-embed.json` na raiz do projeto
+
+As credenciais OAuth **não ficam no git** (segurança). Elas são
+injetadas no pacote durante o build, a partir de um arquivo
+`oauth-embed.json` na raiz do projeto (gitignored). **Sem ele, o
+pacote publicado sai sem credenciais e o `npx` não vai funcionar
+zero-config.**
+
+Esse arquivo é o JSON baixado do Google Cloud Console (a credencial
+OAuth tipo Desktop do projeto `gtm-liveseo-mcp`). Coloque-o na raiz:
+
+```
+C:\Users\LS.NOT 96\gtm-mcp-liveseo\oauth-embed.json
+```
+
+Conteúdo (mesmo formato do download do Console):
+
+```json
+{ "installed": { "client_id": "...", "client_secret": "GOCSPX-..." } }
+```
+
+> Guarde esse arquivo num lugar seguro (gerenciador de senhas / cofre
+> da liveSEO). Quem for publicar precisa ter ele localmente. Como
+> alternativa, exporte `GTM_EMBED_CLIENT_ID` e
+> `GTM_EMBED_CLIENT_SECRET` como variáveis de ambiente antes de
+> publicar.
+
+No `npm publish`, o build roda sozinho e deve imprimir
+`[build] credenciais embutidas: …`. Se aparecer
+`[build] AVISO: build sem credenciais`, **pare** — o `oauth-embed.json`
+não está na raiz.
+
 ## Primeira publicação (uma vez)
 
 Na máquina de quem vai publicar (precisa de Node 18+):
@@ -10,10 +42,12 @@ Na máquina de quem vai publicar (precisa de Node 18+):
 ```bash
 cd "C:\Users\LS.NOT 96\gtm-mcp-liveseo"
 
+# 0. Garanta que oauth-embed.json está na raiz (ver acima)
+
 # 1. Login no npm (abre o navegador / pede OTP). Só na 1ª vez.
 npm login
 
-# 2. Publicar
+# 2. Publicar (o build injeta as credenciais automaticamente)
 npm publish --access public
 ```
 
