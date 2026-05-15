@@ -4,7 +4,7 @@
   "display_name": "liveSEO — Google Tag Manager",
   "version": "0.1.0",
   "description": "Gerencie contas, containers, workspaces, tags, triggers e variáveis do Google Tag Manager via Claude — em português, com modo seguro por padrão.",
-  "long_description": "Esta extensão conecta o Claude Desktop ao Google Tag Manager rodando localmente na sua máquina. Tokens OAuth ficam armazenados apenas no seu computador (sem servidor terceiro). Por padrão, opera em modo readonly — apenas leitura. Para habilitar operações destrutivas (criar/editar/remover/publicar), marque a opção 'Permitir escrita' nas configurações. Mensagens de erro e descrições estão em português brasileiro.",
+  "long_description": "Esta extensão conecta o Claude Desktop ao Google Tag Manager rodando localmente na sua máquina. Tokens OAuth ficam armazenados apenas no seu computador (sem servidor terceiro). Suporta multi-conta: cada cliente vira um perfil e você troca de conta pelo chat com a tool gtm_auth, sem refazer login. Por padrão, opera em modo readonly — apenas leitura. Para habilitar operações destrutivas (criar/editar/remover/publicar), marque a opção 'Permitir escrita' nas configurações. Mensagens de erro e descrições estão em português brasileiro.",
   "author": {
     "name": "liveSEO",
     "email": "lucas.bueno@liveseo.com.br",
@@ -59,6 +59,7 @@
   },
   "tools": [
     { "name": "gtm_help", "description": "Guia de uso e melhores práticas." },
+    { "name": "gtm_auth", "description": "Multi-conta: status, list, login, switch, logout de perfis." },
     { "name": "gtm_audit_container", "description": "Relatório de saúde do container em PT-BR." },
     { "name": "gtm_account", "description": "Lista, consulta e atualiza contas GTM." },
     { "name": "gtm_container", "description": "CRUD de containers, snippet de instalação, lookup, combine, moveTagId." },

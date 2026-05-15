@@ -59,6 +59,43 @@ E reinicie Claude. Para voltar pro modo seguro, remova `--write` e reinicie.
 - Auditoria, análise, exploração → modo padrão (readonly)
 - Implementação de tags pra cliente → modo `--write`
 
+## Multi-conta: trocar de email por cliente
+
+Na liveSEO cada cliente costuma exigir um email diferente pra acessar o GTM. Aqui isso é resolvido com **perfis**: cada conta vira um perfil salvo, e você troca pelo chat sem refazer login toda vez.
+
+**Primeira vez com um cliente** (cria o perfil):
+
+```
+Você: Loga na conta do cliente Obramax. Usa o perfil "obramax".
+
+Claude: chama gtm_auth action=login profile="obramax"
+→ Abre o navegador no SELETOR DE CONTAS do Google
+→ Você escolhe/loga com o email que tem acesso ao GTM da Obramax
+→ Perfil "obramax" salvo e ativo
+```
+
+**Próximas vezes** (troca instantânea, sem login):
+
+```
+Você: Troca pra conta da Velocità.
+Claude: chama gtm_auth action=switch profile="velocita"
+→ Perfil ativo agora é velocita (sem reabrir navegador)
+```
+
+**Comandos úteis no chat:**
+
+| O que falar | O que o Claude faz |
+|---|---|
+| "qual conta tô logado?" | `gtm_auth status` |
+| "lista as contas que tenho salvas" | `gtm_auth list` |
+| "loga no cliente X com perfil x" | `gtm_auth login profile=x` (abre navegador) |
+| "troca pro perfil x" | `gtm_auth switch profile=x` (sem login) |
+| "desconecta o perfil x" | `gtm_auth logout profile=x` |
+
+Cada perfil fica em `C:\Users\<você>\.gtm-mcp\profiles\<perfil>.json`. Várias contas ficam logadas ao mesmo tempo — você só alterna qual está ativa.
+
+> 💡 Convenção: use o **nome do cliente** como nome do perfil (`obramax`, `velocita`, etc.). Se errar a conta e der "403 / sem acesso", peça `gtm_auth list` e troque pro perfil certo.
+
 ## Fluxo de trabalho típico
 
 ### Fluxo 1: Auditar container de um cliente

@@ -56,7 +56,19 @@ Para habilitar escrita:
 }
 ```
 
-Reinicie o Claude Desktop. Na primeira chamada de tool, um navegador vai abrir pra login Google. O token fica salvo em `~/.gtm-mcp/credentials.json` (permissões 0600).
+Reinicie o Claude Desktop. Na primeira chamada de tool, um navegador vai abrir pra login Google. Os tokens ficam salvos em `~/.gtm-mcp/profiles/<perfil>.json` (permissões 0600).
+
+## Multi-conta (perfis)
+
+Pensado para agência que acessa GTM de vários clientes com emails diferentes. Cada conta é um **perfil** salvo; você troca pelo chat via a tool `gtm_auth`, sem refazer login:
+
+- `gtm_auth status` — qual conta está ativa
+- `gtm_auth list` — perfis salvos e emails
+- `gtm_auth login profile='cliente-x'` — autentica (abre navegador no seletor de contas Google)
+- `gtm_auth switch profile='cliente-x'` — troca o perfil ativo sem login
+- `gtm_auth logout profile='cliente-x'` — remove o token de um perfil
+
+O login usa `prompt=select_account`, então o seletor de contas Google **sempre** aparece — cada pessoa escolhe o email do cliente certo.
 
 ## CLI
 
@@ -64,9 +76,9 @@ Reinicie o Claude Desktop. Na primeira chamada de tool, um navegador vai abrir p
 npx gtm-mcp-liveseo [opções]
 
 Opções:
-  --write       Habilita criar/editar/remover/publicar
-  --logout      Remove o token salvo
-  --help        Mostra ajuda
+  --write             Habilita criar/editar/remover/publicar
+  --logout [perfil]   Remove o token de um perfil (default: ativo)
+  --help              Mostra ajuda
 ```
 
 ## Variáveis de ambiente

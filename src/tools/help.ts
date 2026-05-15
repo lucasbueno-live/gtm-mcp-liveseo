@@ -6,7 +6,21 @@ const HELP_TEXT = `# liveSEO GTM MCP — Guia rápido
 
 Esta é a versão liveSEO do MCP server pro Google Tag Manager. Roda local na máquina do usuário (sem servidor terceiro), com mensagens em PT-BR e modo readonly por padrão.
 
+## Multi-conta (IMPORTANTE pra agência)
+
+Cada conta Google de cliente é um **perfil** salvo. Antes de auditar/mexer, garanta que está no perfil certo:
+
+- \`gtm_auth\` action=status — qual conta está ativa agora
+- \`gtm_auth\` action=list — todos os perfis salvos e seus emails
+- \`gtm_auth\` action=login profile='cliente-x' — autentica um perfil (abre o navegador com o **seletor de contas Google** — a pessoa escolhe o email do cliente)
+- \`gtm_auth\` action=switch profile='cliente-x' — troca o perfil ativo SEM refazer login
+- \`gtm_auth\` action=logout profile='cliente-x' — remove o token de um perfil
+
+Quando o usuário disser "vamos trabalhar no cliente X" e você receber erro 403 (sem acesso), provavelmente está no perfil errado — chame \`gtm_auth list\` e sugira \`switch\` ou \`login\` pro perfil do cliente. Use o nome do cliente como nome do perfil.
+
 ## Fluxo recomendado
+
+1. **Confirmar a conta** — \`gtm_auth\` action=status. Se for outro cliente, \`switch\` ou \`login\`.
 
 1. **Descobrir IDs** — sempre comece com:
    - \`gtm_account\` action=list — lista contas que você tem acesso

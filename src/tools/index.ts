@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { ToolContext } from "./registry.js";
 import { helpTool } from "./help.js";
+import { authTool } from "./auth.js";
 import { auditTool } from "./audit.js";
 import { accountTool } from "./account.js";
 import { containerTool } from "./container.js";
@@ -28,6 +29,7 @@ import {
 export function registerAllTools(server: McpServer, ctx: ToolContext): void {
   const tools = [
     helpTool,
+    authTool,
     auditTool,
     accountTool,
     containerTool,

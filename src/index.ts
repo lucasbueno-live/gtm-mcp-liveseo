@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { getAuthorizedClient } from "./auth/oauth.js";
 import { resolveConfig } from "./utils/config.js";
+import { Session } from "./auth/session.js";
 import { registerAllTools } from "./tools/index.js";
 import { logStderr } from "./utils/logger.js";
 
@@ -15,49 +15,68 @@ async function main(): Promise<void> {
   }
 
   if (args.includes("--logout")) {
-    const { clearCredentials, getTokenFilePath } = await import(
+    const { deleteProfile, getActiveProfileName } = await import(
       "./auth/tokenStore.js"
     );
-    await clearCredentials();
-    logStderr(`Token removido (${getTokenFilePath()}). Próxima execução vai pedir login.`);
+    const idx = args.indexOf("--logout");
+    const explicit = args[idx + 1];
+    const profile =
+      explicit && !explicit.startsWith("--")
+        ? explicit
+        : await getActiveProfileName();
+    await deleteProfile(profile);
+    logStderr(
+      `Perfil '${profile}' removido. Próxima execução vai pedir login.`,
+    );
     return;
   }
 
   const config = await resolveConfig(args);
+  const session = await Session.create(config, process.env.GTM_MCP_PROFILE);
 
   const server = new McpServer({
     name: "liveseo-gtm-mcp",
-    version: "0.1.0",
+    version: "0.2.0",
   });
 
   registerAllTools(server, {
-    getAuth: () => getAuthorizedClient(config),
+    getAuth: () => session.getAuth(),
     config,
+    session,
   });
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  logStderr("✅ Servidor MCP conectado via stdio. Aguardando comandos do Claude.");
+  logStderr(
+    `✅ Servidor MCP conectado (perfil inicial: ${session.getActiveProfile()}). Aguardando comandos do Claude.`,
+  );
 }
 
 function usage(): string {
-  return `liveSEO GTM MCP server
+  return `liveSEO GTM MCP server (multi-conta)
 
 Uso:
-  npx @liveseo/gtm-mcp [opções]
+  npx gtm-mcp-liveseo [opções]
 
 Opções:
-  --write         Habilita operações de escrita (criar, editar, remover, publicar).
-                  Sem essa flag, apenas operações de leitura são permitidas.
-  --logout        Remove o token salvo em ~/.gtm-mcp/credentials.json e sai.
-  --help, -h      Mostra esta ajuda.
+  --write             Habilita operações de escrita (criar, editar, remover, publicar).
+                      Sem essa flag, apenas operações de leitura são permitidas.
+  --logout [perfil]   Remove o token de um perfil (default: o perfil ativo).
+  --help, -h          Mostra esta ajuda.
+
+Multi-conta:
+  Cada conta Google de cliente é um "perfil" salvo em
+  ~/.gtm-mcp/profiles/<perfil>.json. Troque de conta pelo chat com a
+  tool gtm_auth (login/switch/list/status/logout). O login sempre abre
+  o seletor de contas Google pra você escolher o email certo.
 
 Variáveis de ambiente:
-  GTM_MCP_CLIENT_ID       Client ID OAuth (alternativa ao arquivo).
+  GTM_MCP_CLIENT_ID       Client ID OAuth.
   GTM_MCP_CLIENT_SECRET   Client Secret OAuth.
   GTM_MCP_OAUTH_FILE      Caminho do credentials.json (default: ~/.gtm-mcp/oauth-client.json).
+  GTM_MCP_PROFILE         Perfil inicial ao iniciar o servidor (default: 'default').
 
-Documentação: https://github.com/liveseo/gtm-mcp
+Documentação: https://github.com/lucasbueno-live/gtm-mcp-liveseo
 `;
 }
 
