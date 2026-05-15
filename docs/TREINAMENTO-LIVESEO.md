@@ -20,6 +20,7 @@ Doc interno para o time da liveSEO se familiarizar com a versão local do MCP se
 - Node.js 18+ instalado ([nodejs.org](https://nodejs.org/))
 - Claude Desktop instalado
 - Credenciais OAuth da liveSEO (peça pro Lucas o `GTM_MCP_CLIENT_ID` e `GTM_MCP_CLIENT_SECRET`)
+- **Sua conta Google adicionada como test user** — manda pro Lucas o(s) email(s) que você usa pra acessar GTM de cliente; ele adiciona no projeto. Sem isso, o login dá "app bloqueado".
 
 ### Configuração
 
@@ -42,9 +43,11 @@ Doc interno para o time da liveSEO se familiarizar com a versão local do MCP se
 ```
 
 3. Salve e reinicie Claude Desktop
-4. Na primeira tool, um navegador abre pra login Google — escolha a conta que tem acesso ao GTM do cliente
-5. ⚠️ **Vai aparecer a tela "O Google não verificou este app"** — isso é esperado e seguro. Clique em **"Avançado"** (ou "Advanced") → **"Acessar gtm-mcp-liveseo (não seguro)"**. O app é da liveSEO e roda local na sua máquina; o aviso só existe porque não pagamos a verificação do Google (desnecessária pra ferramenta interna). Acontece **uma vez por conta**.
+4. Na primeira tool, um navegador abre pra login Google — escolha a conta que tem acesso ao GTM do cliente (e que já foi adicionada como test user)
+5. ⚠️ **Vai aparecer a tela amarela "O Google não verificou este app"** — esperado e seguro. Clique em **"Avançado"** (ou "Advanced") → **"Acessar gtm-liveseo-mcp (não seguro)"**. O app é da liveSEO e roda local na sua máquina; o token nem sai do computador. → Se aparecer tela **vermelha "app bloqueado"**, sua conta não está na lista de test users: manda o email pro Lucas.
 6. Pronto. O token fica salvo em `C:\Users\<você>\.gtm-mcp\profiles\<perfil>.json`
+
+> 🔁 **Re-login a cada ~7 dias:** por limitação do Google (app em modo Testing), o acesso expira semanalmente. Quando isso acontecer, o Claude vai dizer que precisa reautenticar — é só pedir "faz login de novo no perfil X" (ou `gtm_auth login profile='X'`), o navegador reabre, 1 clique e segue. Não perde nada.
 
 ### Modo escrita (quando precisar)
 

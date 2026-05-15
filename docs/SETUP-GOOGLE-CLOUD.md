@@ -96,23 +96,19 @@ Salve. Clique **Save and Continue**.
 
 > 💡 No futuro vamos suportar um modo "readonly" do servidor MCP que usa só o primeiro scope. Por ora, deixamos todos cadastrados.
 
-#### 4.4. Test users
+#### 4.4. Test users (OBRIGATÓRIO — o app fica em Testing)
 
-Pode **pular** esta etapa (adicione só o seu email se o formulário exigir pelo menos um). Não vamos depender da lista de test users porque o app vai ser **publicado** no próximo passo — aí qualquer conta Google consegue logar, sem precisar cadastrar email por email.
+> ⚠️ **Correção importante.** Para escopos *sensíveis* (todos os do Tag Manager são), o Google **só** oferece o atalho "Avançado → Acessar" para: a conta dona do projeto **ou** contas na lista de **test users** (com o app em **Testing**). Um app **publicado sem verificação** com escopos sensíveis dá **bloqueio seco** ("Este app está bloqueado") em contas externas — não tem como passar. Por isso **não publique**; mantenha em **Testing** e use test users.
 
-> ⚠️ Por que não ficar em "Testing": no modo Testing o refresh token **expira a cada 7 dias**, forçando re-login semanal de cada cliente. Publicando, o token passa a ter longa duração.
+Na seção **Test users / Usuários de teste**, clique **+ ADD USERS** e adicione **cada conta Google** que o time vai usar pra acessar GTM de cliente (as contas `gascliveseo*`, contas dedicadas, etc.). Limite: 100 emails.
 
-Clique **Save and Continue**, depois **Back to Dashboard**.
+Clique **Save and Continue**.
 
-#### 4.5. Publicar o app (Production, SEM verificação)
+**Tradeoff aceito:** no modo Testing o refresh token **expira a cada ~7 dias** → cada conta precisa refazer login semanalmente. Na prática isso é 1 clique: a tool `gtm_auth` reabre o navegador automaticamente quando o token morre (ou rode `gtm_auth login profile='X'`). O servidor detecta o token expirado e dispara o re-login sozinho.
 
-Ainda em **APIs & Services → OAuth consent screen**, procure o status de publicação ("Publishing status"). Vai estar em **Testing**.
+#### 4.5. NÃO publique o app
 
-Clique em **PUBLISH APP** → confirme (**Confirm**).
-
-O status muda pra **In production**.
-
-**Você NÃO precisa enviar pra verificação.** Vai aparecer algo como "Verification not required" ou um botão "Prepare for verification" — **ignore**. Os escopos do Tag Manager são "sensíveis" (não "restritos"), então o app funciona publicado sem verificação. O único efeito de não verificar: cada pessoa vê **uma vez por conta** a tela "O Google não verificou este app" e precisa clicar em **Avançado → Acessar (nome do app)**. É seguro — o app é da liveSEO e roda local na máquina de vocês. (Documentado em [TREINAMENTO-LIVESEO.md](TREINAMENTO-LIVESEO.md) pro time não se assustar.)
+Deixe o **Publishing status** em **Testing**. **Não** clique em "PUBLISH APP". (Publicar sem verificação **piora** — vira bloqueio seco pra escopos sensíveis. Só publicar depois de passar pela verificação completa do Google, que é opcional e fica pra um momento futuro se quiserem eliminar a tela de aviso e o limite de 100 contas.)
 
 ### 5. Criar credenciais OAuth
 
@@ -160,7 +156,8 @@ Você **não** embute o `client_id`/`client_secret` no pacote nem no repositóri
 - [ ] Tag Manager API enabled
 - [ ] OAuth consent screen configurado como **External**
 - [ ] Todos os 9 scopes adicionados
-- [ ] App **publicado** ("In production"), **sem** enviar pra verificação
+- [ ] App em **Testing** (NÃO publicado)
+- [ ] Todas as contas Google do time adicionadas como **test users**
 - [ ] Credencial **Desktop app** criada
 - [ ] `client_id` + `client_secret` em mãos
 
@@ -170,11 +167,17 @@ Quando estiver pronto, é só configurar no Claude Desktop (ou publicar no npm p
 
 ## FAQ
 
-**Q: Preciso publicar o app pra "Production"? E verificar?**
-**Publicar: sim. Verificar: não.** Como vocês logam com contas fora do domínio @liveseo, o app tem que ser External e Publicado (senão o token expira a cada 7 dias no modo Testing). A verificação do Google é **opcional** — sem ela, cada conta vê uma vez a tela "app não verificado" e clica em "Avançado → Continuar". É seguro pra ferramenta interna. Verificar só vale se um dia incomodar essa tela ou passar de ~100 contas; aí é um processo à parte (privacy policy pública, domínio verificado, revisão do Google).
+**Q: Devo publicar o app?**
+**Não.** Para escopos sensíveis (Tag Manager), publicar sem verificação **bloqueia** contas externas (tela vermelha "Este app está bloqueado", sem saída). Mantenha em **Testing** e adicione as contas como **test users** — esse é o único caminho que funciona sem passar pela verificação do Google. Publicar só faz sentido **depois** de verificar (processo opcional: privacy policy pública, domínio verificado em Search Console, vídeo demo, revisão do Google ~1-2 semanas — vale se um dia quiserem tirar a tela de aviso e o limite de 100 contas).
 
-**Q: A tela "O Google não verificou este app" é perigosa?**
-Não, no nosso caso. Essa tela existe pra proteger usuários de apps de terceiros desconhecidos. Aqui o "app" é o MCP da liveSEO rodando **localmente na máquina de vocês** — o token nem sai do computador. Clicar em "Avançado → Acessar" é seguro. Acontece **uma vez por conta** (depois o Google lembra).
+**Q: Por que dá "Este app está bloqueado" (tela vermelha sem botão Avançado)?**
+O app está **publicado sem verificação** com escopos sensíveis. Solução: **voltar pra Testing** (botão "Back to testing" no consent screen) e adicionar a conta como test user. Aí a tela vira a **amarela** "O Google não verificou este app", que tem **Avançado → Acessar** (seguro: é o MCP da liveSEO rodando local).
+
+**Q: O que é a tela amarela "O Google não verificou este app"?**
+É a esperada no nosso fluxo (Testing + test user). Clique **Avançado → Acessar gtm-liveseo-mcp**. Seguro — o app roda local, o token nem sai da máquina. Acontece a cada novo login.
+
+**Q: O token expira mesmo a cada 7 dias?**
+Sim, é limitação do modo Testing do Google. Mas o impacto é pequeno: o MCP detecta o token expirado e reabre o login sozinho (1 clique no navegador). Você também pode forçar com `gtm_auth login profile='X'`. Pra eliminar de vez, só verificando o app (item acima).
 
 **Q: Esse projeto Google Cloud cobra algo?**
 Não. As APIs do GTM têm cota gratuita generosa. Só viraria custo se algum dia rolasse uso muito pesado (milhares de chamadas/dia/usuário), o que não é o caso.
