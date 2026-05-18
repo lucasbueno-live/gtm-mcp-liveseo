@@ -6,7 +6,7 @@ import { join, dirname } from "node:path";
 import { resolveConfig } from "../utils/config.js";
 import { loginProfile } from "../auth/oauth.js";
 import { sanitizeProfileName, setActiveProfileName } from "../auth/tokenStore.js";
-import { c, banner } from "./theme.js";
+import { c, banner, tips } from "./theme.js";
 
 type Target = "claude" | "cursor";
 
@@ -64,16 +64,14 @@ function line(s = ""): void {
 export async function runSetup(): Promise<void> {
   const rl = createInterface({ input: stdin, output: stdout });
   try {
-    line("");
     line(banner());
     line("");
-    line(c.bold("Vou te guiar em 3 passos:"));
-    line(c.orange("  1)") + " Você faz login com sua conta Google (navegador)");
-    line(c.orange("  2)") + " Eu salvo o acesso só na " + c.bold("SUA") + " máquina");
-    line(c.orange("  3)") + " Eu configuro o Claude Desktop e/ou o Cursor");
+    line(tips());
     line("");
     line(
-      c.gray("Pré-requisito: seu email precisa ter sido liberado pelo time (test user).") ,
+      c.gray(
+        "Pré-requisito: seu email precisa ter sido liberado pelo time (test user).",
+      ),
     );
     line("");
 
