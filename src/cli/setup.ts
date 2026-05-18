@@ -7,6 +7,8 @@ import { resolveConfig } from "../utils/config.js";
 import { loginProfile } from "../auth/oauth.js";
 import { sanitizeProfileName, setActiveProfileName } from "../auth/tokenStore.js";
 
+type Target = "claude" | "cursor";
+
 function claudeConfigPath(): string {
   if (platform === "win32") {
     return join(
@@ -25,6 +27,19 @@ function claudeConfigPath(): string {
     );
   }
   return join(homedir(), ".config", "Claude", "claude_desktop_config.json");
+}
+
+// Cursor usa ~/.cursor/mcp.json (global) em todos os SOs.
+function cursorConfigPath(): string {
+  return join(homedir(), ".cursor", "mcp.json");
+}
+
+function configPathFor(target: Target): string {
+  return target === "cursor" ? cursorConfigPath() : claudeConfigPath();
+}
+
+function appLabel(target: Target): string {
+  return target === "cursor" ? "Cursor" : "Claude Desktop";
 }
 
 function buildServerEntry(write: boolean, profile: string) {
@@ -50,19 +65,34 @@ export async function runSetup(): Promise<void> {
   try {
     line("");
     line("==============================================");
-    line("  liveSEO · Google Tag Manager para o Claude");
+    line("  liveSEO · Google Tag Manager");
     line("  Assistente de configuração");
     line("==============================================");
     line("");
     line("Vou te guiar em 3 passos:");
     line("  1) Você faz login com sua conta Google (abre o navegador)");
     line("  2) Eu salvo o acesso só na SUA máquina");
-    line("  3) Eu te dou (ou já escrevo) a configuração do Claude Desktop");
+    line("  3) Eu configuro o Claude Desktop e/ou o Cursor pra você");
     line("");
     line(
       "Pré-requisito: seu email precisa ter sido liberado pelo time (test user).",
     );
     line("");
+
+    // --- Onde instalar ---
+    line("Onde você quer usar?");
+    line("  [1] Claude Desktop");
+    line("  [2] Cursor");
+    line("  [3] Ambos");
+    const destAns = (
+      await rl.question("Escolha (1/2/3). Enter = 1: ")
+    ).trim();
+    const targets: Target[] =
+      destAns === "2"
+        ? ["cursor"]
+        : destAns === "3"
+          ? ["claude", "cursor"]
+          : ["claude"];
 
     const profRaw = await rl.question(
       "Nome do perfil (ex.: nome do cliente). Enter = 'default': ",
@@ -80,16 +110,14 @@ export async function runSetup(): Promise<void> {
 
     line("");
     line(
-      `Perfil: ${profile}  |  Modo: ${write ? "ESCRITA (criar/editar/publicar)" : "somente leitura"}`,
+      `Destino: ${targets.map(appLabel).join(" + ")}  |  Perfil: ${profile}  |  Modo: ${write ? "ESCRITA" : "somente leitura"}`,
     );
     line("");
     line("Passo 1/3 — vou abrir o navegador para o login Google.");
     line("  • Escolha a conta com acesso ao GTM do cliente");
-    line(
-      '  • Na tela amarela "O Google não verificou este app": clique em',
-    );
-    line('    "Avançado" → "Acessar gtm-liveseo-mcp (não seguro)" (é seguro,');
-    line("    o app é da liveSEO e roda só na sua máquina)");
+    line('  • Tela amarela "O Google não verificou este app": clique em');
+    line('    "Avançado" → "Acessar gtm-liveseo-mcp" (é seguro — o app é da');
+    line("    liveSEO e roda só na sua máquina)");
     line("  • Permita o acesso ao Tag Manager");
     line("");
     await rl.question("Pressione Enter para abrir o navegador… ");
@@ -104,50 +132,50 @@ export async function runSetup(): Promise<void> {
     line("");
 
     const entry = buildServerEntry(write, profile);
-    const snippet = JSON.stringify({ mcpServers: { gtm: entry } }, null, 2);
-    const cfgPath = claudeConfigPath();
 
-    line("Passo 3/3 — configuração do Claude Desktop.");
+    line("Passo 3/3 — configuração.");
     line("");
     const auto = (
       await rl.question(
-        `Quer que eu já configure o Claude Desktop pra você? [S/n]\n(arquivo: ${cfgPath}) : `,
+        `Quer que eu já configure ${targets.map(appLabel).join(" e ")} pra você? [S/n]: `,
       )
     )
       .trim()
       .toLowerCase();
     const doAuto = auto === "" || auto === "s" || auto === "sim" || auto === "y";
 
-    if (doAuto) {
-      await mergeClaudeConfig(cfgPath, entry);
-      line("");
-      line("✅ Pronto! Configurei o Claude Desktop pra você.");
-      line(`   (backup do arquivo antigo em ${cfgPath}.bak, se já existia)`);
-      line("");
-      line("➡️  Agora FECHE e ABRA o Claude Desktop de novo.");
-      line('   Depois é só pedir, ex.: "liste minhas contas do GTM".');
-    } else {
-      line("");
-      line("Copie este bloco e cole no arquivo:");
-      line(`  ${cfgPath}`);
-      line("");
-      line("Se o arquivo já tiver outros servidores, junte só a parte");
-      line('"gtm" dentro de "mcpServers". Bloco:');
-      line("");
-      line(snippet);
-      line("");
-      line("Depois FECHE e ABRA o Claude Desktop de novo.");
+    for (const target of targets) {
+      const cfgPath = configPathFor(target);
+      const label = appLabel(target);
+      if (doAuto) {
+        await mergeConfig(cfgPath, entry);
+        line(`✅ ${label} configurado (${cfgPath})`);
+        line(`   backup do anterior em ${cfgPath}.bak (se existia)`);
+      } else {
+        const snippet = JSON.stringify(
+          { mcpServers: { gtm: entry } },
+          null,
+          2,
+        );
+        line(`— ${label} — cole no arquivo: ${cfgPath}`);
+        line("(se já tiver outros servidores, junte só a parte \"gtm\")");
+        line("");
+        line(snippet);
+        line("");
+      }
     }
+
+    line("");
+    line("➡️  Agora FECHE e ABRA de novo:");
+    for (const t of targets) line(`   • ${appLabel(t)}`);
+    line('Depois é só pedir, ex.: "liste minhas contas do GTM".');
     line("");
   } finally {
     rl.close();
   }
 }
 
-async function mergeClaudeConfig(
-  cfgPath: string,
-  entry: object,
-): Promise<void> {
+async function mergeConfig(cfgPath: string, entry: object): Promise<void> {
   let current: { mcpServers?: Record<string, unknown> } = {};
   let existed = false;
   try {

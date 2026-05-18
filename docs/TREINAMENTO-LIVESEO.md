@@ -31,11 +31,12 @@ Doc interno para o time da liveSEO se familiarizar com a versão local do MCP se
    ```
 
 3. Siga o passo a passo na tela. Ele vai:
+   - Perguntar **onde você usa**: `[1] Claude Desktop  [2] Cursor  [3] Ambos`
    - Perguntar nome do perfil (Enter pra usar o padrão) e se você precisa de modo escrita
    - Abrir o **navegador** pro login Google → escolha a conta com acesso ao GTM
    - ⚠️ Tela amarela **"O Google não verificou este app"** → **"Avançado" → "Acessar gtm-liveseo-mcp"** (seguro; roda só na sua máquina). Se aparecer tela **vermelha "app bloqueado"**, seu email não está liberado: mande pro Lucas.
-   - Perguntar se pode **já configurar o Claude Desktop pra você** → responda **S**
-4. **Feche e abra o Claude Desktop.** Pronto — peça, ex.: *"liste minhas contas do GTM"*.
+   - Perguntar se pode **já configurar pra você** (Claude e/ou Cursor) → responda **S**
+4. **Feche e abra** o app escolhido (Claude Desktop e/ou Cursor). Pronto — peça, ex.: *"liste minhas contas do GTM"*.
 
 > O assistente cria/edita o `claude_desktop_config.json` automaticamente (com backup `.bak`). Se preferir colar à mão, responda **n** que ele mostra o JSON e o caminho do arquivo.
 

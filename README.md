@@ -22,7 +22,7 @@ MCP server local em Node.js para Google Tag Manager. Versão liveSEO do projeto 
 
 ## Instalação
 
-### Jeito fácil — assistente
+### Jeito fácil — assistente (Claude Desktop ou Cursor)
 
 No terminal (precisa de [Node.js 18+](https://nodejs.org/)):
 
@@ -30,12 +30,17 @@ No terminal (precisa de [Node.js 18+](https://nodejs.org/)):
 npx -y gtm-mcp-liveseo setup
 ```
 
-O assistente faz o login Google (abre o navegador) e já escreve a
-configuração no Claude Desktop pra você. Depois é só reabrir o Claude.
+O assistente pergunta onde você usa (**Claude Desktop**, **Cursor** ou
+**ambos**), faz o login Google (abre o navegador) e já escreve a
+configuração pra você. Depois é só reabrir o app escolhido.
 
 ### Manual
 
-No Claude Desktop, edite `claude_desktop_config.json`:
+**Claude Desktop** — `claude_desktop_config.json`
+(Settings → Developer → Edit Config).
+**Cursor** — `~/.cursor/mcp.json` (global) ou `.cursor/mcp.json` (projeto).
+
+Mesmo bloco nos dois (schema `mcpServers` é idêntico):
 
 ```json
 {
