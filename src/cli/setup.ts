@@ -6,6 +6,7 @@ import { join, dirname } from "node:path";
 import { resolveConfig } from "../utils/config.js";
 import { loginProfile } from "../auth/oauth.js";
 import { sanitizeProfileName, setActiveProfileName } from "../auth/tokenStore.js";
+import { c, banner } from "./theme.js";
 
 type Target = "claude" | "cursor";
 
@@ -64,28 +65,25 @@ export async function runSetup(): Promise<void> {
   const rl = createInterface({ input: stdin, output: stdout });
   try {
     line("");
-    line("==============================================");
-    line("  liveSEO · Google Tag Manager");
-    line("  Assistente de configuração");
-    line("==============================================");
+    line(banner());
     line("");
-    line("Vou te guiar em 3 passos:");
-    line("  1) Você faz login com sua conta Google (abre o navegador)");
-    line("  2) Eu salvo o acesso só na SUA máquina");
-    line("  3) Eu configuro o Claude Desktop e/ou o Cursor pra você");
+    line(c.bold("Vou te guiar em 3 passos:"));
+    line(c.orange("  1)") + " Você faz login com sua conta Google (navegador)");
+    line(c.orange("  2)") + " Eu salvo o acesso só na " + c.bold("SUA") + " máquina");
+    line(c.orange("  3)") + " Eu configuro o Claude Desktop e/ou o Cursor");
     line("");
     line(
-      "Pré-requisito: seu email precisa ter sido liberado pelo time (test user).",
+      c.gray("Pré-requisito: seu email precisa ter sido liberado pelo time (test user).") ,
     );
     line("");
 
     // --- Onde instalar ---
-    line("Onde você quer usar?");
-    line("  [1] Claude Desktop");
-    line("  [2] Cursor");
-    line("  [3] Ambos");
+    line(c.bold("Onde você quer usar?"));
+    line("  " + c.orange("[1]") + " Claude Desktop");
+    line("  " + c.orange("[2]") + " Cursor");
+    line("  " + c.orange("[3]") + " Ambos");
     const destAns = (
-      await rl.question("Escolha (1/2/3). Enter = 1: ")
+      await rl.question(c.orange("→ ") + "Escolha (1/2/3). Enter = 1: ")
     ).trim();
     const targets: Target[] =
       destAns === "2"
@@ -95,13 +93,19 @@ export async function runSetup(): Promise<void> {
           : ["claude"];
 
     const profRaw = await rl.question(
-      "Nome do perfil (ex.: nome do cliente). Enter = 'default': ",
+      c.orange("→ ") +
+        "Nome do perfil (ex.: nome do cliente). " +
+        c.gray("Enter = 'default'") +
+        ": ",
     );
     const profile = sanitizeProfileName(profRaw || "default");
 
     const writeAns = (
       await rl.question(
-        "Vai precisar CRIAR/EDITAR tags (modo escrita)? Padrão é só leitura. [s/N]: ",
+        c.orange("→ ") +
+          "Vai precisar CRIAR/EDITAR tags (modo escrita)? " +
+          c.gray("Padrão é só leitura. [s/N]") +
+          ": ",
       )
     )
       .trim()
@@ -110,34 +114,53 @@ export async function runSetup(): Promise<void> {
 
     line("");
     line(
-      `Destino: ${targets.map(appLabel).join(" + ")}  |  Perfil: ${profile}  |  Modo: ${write ? "ESCRITA" : "somente leitura"}`,
+      c.gray("Destino: ") +
+        c.bold(targets.map(appLabel).join(" + ")) +
+        c.gray("  |  Perfil: ") +
+        c.bold(profile) +
+        c.gray("  |  Modo: ") +
+        (write ? c.orangeBold("ESCRITA") : c.bold("somente leitura")),
     );
     line("");
-    line("Passo 1/3 — vou abrir o navegador para o login Google.");
-    line("  • Escolha a conta com acesso ao GTM do cliente");
-    line('  • Tela amarela "O Google não verificou este app": clique em');
-    line('    "Avançado" → "Acessar gtm-liveseo-mcp" (é seguro — o app é da');
-    line("    liveSEO e roda só na sua máquina)");
-    line("  • Permita o acesso ao Tag Manager");
+    line(c.orangeBold("Passo 1/3") + c.gray(" — login Google (abre o navegador)"));
+    line(c.gray("  • Escolha a conta com acesso ao GTM do cliente"));
+    line(
+      c.gray('  • Tela amarela "O Google não verificou este app": clique em'),
+    );
+    line(
+      c.gray('    "Avançado" → "Acessar gtm-liveseo-mcp"') +
+        c.gray(" (seguro — o app é da"),
+    );
+    line(c.gray("    liveSEO e roda só na sua máquina)"));
+    line(c.gray("  • Permita o acesso ao Tag Manager"));
     line("");
-    await rl.question("Pressione Enter para abrir o navegador… ");
+    await rl.question(c.orange("→ ") + "Pressione Enter para abrir o navegador… ");
 
     const config = await resolveConfig(write ? ["--write"] : []);
     const { email } = await loginProfile(config, profile);
     await setActiveProfileName(profile);
 
     line("");
-    line(`Passo 2/3 — ✅ Conectado como ${email ?? "sua conta Google"}.`);
-    line("   Acesso salvo em ~/.gtm-mcp/profiles/ (só nesta máquina).");
+    line(
+      c.orangeBold("Passo 2/3") +
+        " " +
+        c.green("✓") +
+        " Conectado como " +
+        c.bold(email ?? "sua conta Google"),
+    );
+    line(c.gray("   Acesso salvo em ~/.gtm-mcp/profiles/ (só nesta máquina)."));
     line("");
 
     const entry = buildServerEntry(write, profile);
 
-    line("Passo 3/3 — configuração.");
+    line(c.orangeBold("Passo 3/3") + c.gray(" — configuração"));
     line("");
     const auto = (
       await rl.question(
-        `Quer que eu já configure ${targets.map(appLabel).join(" e ")} pra você? [S/n]: `,
+        c.orange("→ ") +
+          `Quer que eu já configure ${targets.map(appLabel).join(" e ")} pra você? ` +
+          c.gray("[S/n]") +
+          ": ",
       )
     )
       .trim()
@@ -149,16 +172,18 @@ export async function runSetup(): Promise<void> {
       const label = appLabel(target);
       if (doAuto) {
         await mergeConfig(cfgPath, entry);
-        line(`✅ ${label} configurado (${cfgPath})`);
-        line(`   backup do anterior em ${cfgPath}.bak (se existia)`);
+        line(c.green("✓ ") + c.bold(label) + " configurado");
+        line(c.gray(`   ${cfgPath}`));
+        line(c.gray(`   backup do anterior em ${cfgPath}.bak (se existia)`));
       } else {
         const snippet = JSON.stringify(
           { mcpServers: { gtm: entry } },
           null,
           2,
         );
-        line(`— ${label} — cole no arquivo: ${cfgPath}`);
-        line("(se já tiver outros servidores, junte só a parte \"gtm\")");
+        line(c.orange("— ") + c.bold(label) + c.gray(` — cole no arquivo:`));
+        line(c.gray(`  ${cfgPath}`));
+        line(c.gray('  (se já tiver outros servidores, junte só a parte "gtm")'));
         line("");
         line(snippet);
         line("");
@@ -166,9 +191,11 @@ export async function runSetup(): Promise<void> {
     }
 
     line("");
-    line("➡️  Agora FECHE e ABRA de novo:");
-    for (const t of targets) line(`   • ${appLabel(t)}`);
-    line('Depois é só pedir, ex.: "liste minhas contas do GTM".');
+    line(c.orangeBold("→ Agora FECHE e ABRA de novo:"));
+    for (const t of targets) line("   " + c.orange("•") + " " + appLabel(t));
+    line(
+      c.gray('Depois é só pedir, ex.: ') + c.bold('"liste minhas contas do GTM"'),
+    );
     line("");
   } finally {
     rl.close();
