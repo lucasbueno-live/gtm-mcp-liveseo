@@ -1,6 +1,6 @@
 {
   "name": "gtm-mcp-liveseo",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "MCP server local para Google Tag Manager — versão liveSEO com PT-BR, modo readonly por padrão e auditoria humana",
   "license": "Apache-2.0",
   "author": "liveSEO <lucas.bueno@liveseo.com.br>",
