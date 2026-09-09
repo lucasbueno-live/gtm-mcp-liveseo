@@ -130,7 +130,7 @@ As credenciais OAuth do app já vêm embutidas — nada disso é obrigatório. U
 
 **Administração**
 - `gtm_environment` — CRUD + reauthorize
-- `gtm_destination` — get, list, link, unlink
+- `gtm_destination` — get, list, link
 - `gtm_user_permission` — CRUD
 
 ## Desenvolvimento

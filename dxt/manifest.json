@@ -77,7 +77,7 @@
     { "name": "gtm_version", "description": "Versões: get, live, publish, remove, setLatest, undelete, update." },
     { "name": "gtm_version_header", "description": "Histórico de versões publicadas." },
     { "name": "gtm_environment", "description": "Environments (Live, Latest, custom)." },
-    { "name": "gtm_destination", "description": "Destinations: list, link, unlink." },
+    { "name": "gtm_destination", "description": "Destinations: get, list, link." },
     { "name": "gtm_user_permission", "description": "Permissões de usuário (ação sensível)." }
   ],
   "keywords": [
