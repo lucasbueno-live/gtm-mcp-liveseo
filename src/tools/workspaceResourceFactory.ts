@@ -26,7 +26,14 @@ export interface WorkspaceResourceOptions<TPayload> {
   resourceIdParamName: string;
   payloadSchema: ZodType<TPayload>;
   itemsPerPage?: number;
+  /** Chave singular do array na resposta de 'list' (ex.: "tag"). */
   listResultKey: string;
+  /**
+   * Segmento de coleção na URL da API (ex.: "tags", "gtag_config").
+   * NÃO é igual a listResultKey — a API usa plural/snake_case no path e
+   * singular/camelCase no corpo da resposta de list.
+   */
+  pathSegment: string;
   supportsRevert?: boolean;
   pickClient: (tm: tagmanager_v2.Tagmanager) => ResourceClient;
 }
@@ -86,7 +93,7 @@ export function createWorkspaceResourceTool<TPayload>(
             }
             case "get": {
               const id = requireField(resourceId, opts.resourceIdParamName, "get");
-              const r = await client.get({ path: `${parent}/${opts.listResultKey}/${id}` });
+              const r = await client.get({ path: `${parent}/${opts.pathSegment}/${id}` });
               return textResult(r.data);
             }
             case "list": {
@@ -112,7 +119,7 @@ export function createWorkspaceResourceTool<TPayload>(
                 "update",
               );
               const r = await client.update({
-                path: `${parent}/${opts.listResultKey}/${id}`,
+                path: `${parent}/${opts.pathSegment}/${id}`,
                 fingerprint: params.fingerprint as string | undefined,
                 requestBody: config,
               });
@@ -121,7 +128,7 @@ export function createWorkspaceResourceTool<TPayload>(
             case "remove": {
               if (!client.delete) throw new Error(`Operação 'remove' não suportada.`);
               const id = requireField(resourceId, opts.resourceIdParamName, "remove");
-              await client.delete({ path: `${parent}/${opts.listResultKey}/${id}` });
+              await client.delete({ path: `${parent}/${opts.pathSegment}/${id}` });
               return textResult({
                 success: true,
                 message: `${opts.resourceLabel} ${id} removido.`,
@@ -131,7 +138,7 @@ export function createWorkspaceResourceTool<TPayload>(
               if (!client.revert) throw new Error(`Operação 'revert' não suportada.`);
               const id = requireField(resourceId, opts.resourceIdParamName, "revert");
               const r = await client.revert({
-                path: `${parent}/${opts.listResultKey}/${id}`,
+                path: `${parent}/${opts.pathSegment}/${id}`,
                 fingerprint: params.fingerprint as string | undefined,
               });
               return textResult(r.data);

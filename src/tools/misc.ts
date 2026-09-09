@@ -158,9 +158,9 @@ export const environmentTool: ToolRegistration = (server, ctx) => {
 export const destinationTool: ToolRegistration = (server, ctx) => {
   server.tool(
     "gtm_destination",
-    "Lista destinations (Google tag IDs) ligados a um container, conecta ou desconecta um destino.",
+    "Lista destinations (Google tag IDs) ligados a um container e conecta um destino. A API do GTM não expõe desconexão — para desconectar, use a interface do Tag Manager.",
     {
-      action: z.enum(["get", "list", "link", "unlink"]),
+      action: z.enum(["get", "list", "link"]),
       accountId: z.string(),
       containerId: z.string(),
       destinationId: z.string().optional(),
@@ -195,14 +195,6 @@ export const destinationTool: ToolRegistration = (server, ctx) => {
               allowUserPermissionFeatureUpdate: params.allowUserPermissionFeatureUpdate,
             });
             return textResult(r.data);
-          }
-          case "unlink": {
-            const id = requireField(destinationId, "destinationId", "unlink");
-            await tm.accounts.containers.destinations.link({
-              parent,
-              destinationId: id,
-            });
-            return textResult({ success: true, message: `Destination ${id} desconectado.` });
           }
         }
       }),

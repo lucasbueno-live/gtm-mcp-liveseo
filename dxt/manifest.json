@@ -2,7 +2,7 @@
   "dxt_version": "0.1",
   "name": "liveseo-gtm-mcp",
   "display_name": "liveSEO — Google Tag Manager",
-  "version": "0.1.0",
+  "version": "0.2.3",
   "description": "Gerencie contas, containers, workspaces, tags, triggers e variáveis do Google Tag Manager via Claude — em português, com modo seguro por padrão.",
   "long_description": "Esta extensão conecta o Claude Desktop ao Google Tag Manager rodando localmente na sua máquina. Tokens OAuth ficam armazenados apenas no seu computador (sem servidor terceiro). Suporta multi-conta: cada cliente vira um perfil e você troca de conta pelo chat com a tool gtm_auth, sem refazer login. Por padrão, opera em modo readonly — apenas leitura. Para habilitar operações destrutivas (criar/editar/remover/publicar), marque a opção 'Permitir escrita' nas configurações. Mensagens de erro e descrições estão em português brasileiro.",
   "author": {
@@ -77,7 +77,7 @@
     { "name": "gtm_version", "description": "Versões: get, live, publish, remove, setLatest, undelete, update." },
     { "name": "gtm_version_header", "description": "Histórico de versões publicadas." },
     { "name": "gtm_environment", "description": "Environments (Live, Latest, custom)." },
-    { "name": "gtm_destination", "description": "Destinations: list, link, unlink." },
+    { "name": "gtm_destination", "description": "Destinations: get, list, link." },
     { "name": "gtm_user_permission", "description": "Permissões de usuário (ação sensível)." }
   ],
   "keywords": [
