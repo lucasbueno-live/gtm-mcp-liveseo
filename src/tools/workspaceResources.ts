@@ -22,6 +22,7 @@ export const tagTool = createWorkspaceResourceTool({
   }),
   itemsPerPage: 20,
   listResultKey: "tag",
+  pathSegment: "tags",
   supportsRevert: true,
   pickClient: (tm) => tm.accounts.containers.workspaces.tags as never,
 });
@@ -38,6 +39,7 @@ export const triggerTool = createWorkspaceResourceTool({
     fingerprint: true,
   }),
   listResultKey: "trigger",
+  pathSegment: "triggers",
   supportsRevert: true,
   pickClient: (tm) => tm.accounts.containers.workspaces.triggers as never,
 });
@@ -54,6 +56,7 @@ export const variableTool = createWorkspaceResourceTool({
     fingerprint: true,
   }),
   listResultKey: "variable",
+  pathSegment: "variables",
   supportsRevert: true,
   pickClient: (tm) => tm.accounts.containers.workspaces.variables as never,
 });
@@ -70,6 +73,7 @@ export const folderTool = createWorkspaceResourceTool({
     fingerprint: true,
   }),
   listResultKey: "folder",
+  pathSegment: "folders",
   pickClient: (tm) => tm.accounts.containers.workspaces.folders as never,
 });
 
@@ -85,6 +89,7 @@ export const zoneTool = createWorkspaceResourceTool({
     fingerprint: true,
   }),
   listResultKey: "zone",
+  pathSegment: "zones",
   supportsRevert: true,
   pickClient: (tm) => tm.accounts.containers.workspaces.zones as never,
 });
@@ -101,6 +106,7 @@ export const clientTool = createWorkspaceResourceTool({
     fingerprint: true,
   }),
   listResultKey: "client",
+  pathSegment: "clients",
   supportsRevert: true,
   pickClient: (tm) => tm.accounts.containers.workspaces.clients as never,
 });
@@ -117,6 +123,7 @@ export const transformationTool = createWorkspaceResourceTool({
     fingerprint: true,
   }),
   listResultKey: "transformation",
+  pathSegment: "transformations",
   supportsRevert: true,
   pickClient: (tm) =>
     tm.accounts.containers.workspaces.transformations as never,
@@ -134,6 +141,7 @@ export const templateTool = createWorkspaceResourceTool({
     fingerprint: true,
   }),
   listResultKey: "template",
+  pathSegment: "templates",
   supportsRevert: true,
   pickClient: (tm) => tm.accounts.containers.workspaces.templates as never,
 });
@@ -150,6 +158,7 @@ export const gtagConfigTool = createWorkspaceResourceTool({
     fingerprint: true,
   }),
   listResultKey: "gtagConfig",
+  pathSegment: "gtag_config",
   pickClient: (tm) =>
     (tm.accounts.containers.workspaces as unknown as Record<string, unknown>)
       .gtag_config as never,
