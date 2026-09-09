@@ -26,6 +26,13 @@ const WRITE_ACTIONS = new Set([
   "resolveConflict",
   "sync",
   "revert",
+  // gtm_destination
+  "link",
+  // gtm_version
+  "setLatest",
+  "undelete",
+  // gtm_environment
+  "reauthorize",
 ]);
 
 const DESTRUCTIVE_ACTIONS = new Set(["remove", "delete", "publish"]);
